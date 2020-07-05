@@ -10,7 +10,7 @@ class BatchnormDropoutWithVGG16(nn.Module):
     def __init__(self,
                  num_classes=100, model_type="vgg_without_maxpool",
                  pooling="average", poolingshape=7, middleshape=4096,
-                 sync="normal", dropout_prob=0.5, deepness=2, cnn_bn_flag=True,
+                 rotational="false", dropout_prob=0.5, deepness=2, cnn_bn_flag=True,
                  fc_bn_flag=True, fc_do_flag=True):
         super(BatchnormDropoutWithVGG16, self).__init__()
 
@@ -33,7 +33,7 @@ class BatchnormDropoutWithVGG16(nn.Module):
 
         """ FCを定義"""
         in_shape = 512 * poolingshape * poolingshape
-        if sync == "normal":
+        if rotational == "false":
             fc = [nn.Linear(in_shape, middleshape)]
             if fc_bn_flag:
                 fc.append(nn.BatchNorm1d(middleshape))
@@ -51,7 +51,7 @@ class BatchnormDropoutWithVGG16(nn.Module):
                         fc.append(nn.Dropout(p=dropout_prob))
             fc.append(nn.Linear(middleshape, num_classes))
 
-        elif sync == "semi":
+        elif rotational == "true":
             fc = [RotationalLinear(nn.Linear(in_shape, middleshape))]
             if fc_bn_flag:
                 fc.append(nn.BatchNorm1d(middleshape))
@@ -69,7 +69,7 @@ class BatchnormDropoutWithVGG16(nn.Module):
                         fc.append(nn.Dropout(p=dropout_prob))
             fc.append(nn.Linear(middleshape, num_classes))
 
-        elif sync == "none":
+        elif rotational == "none":
             fc = nn.Sequential(
                 nn.Linear(in_shape, num_classes),
             )

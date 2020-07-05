@@ -1,6 +1,8 @@
 """ batch normalizationとdropout"""
 
 # Official packages
+import sys
+import os
 from os import getcwd, makedirs
 from os.path import join, isdir
 import datetime
@@ -16,9 +18,9 @@ from torch.utils.tensorboard import SummaryWriter
 from rotational_update import Rotatable
 
 # Local modules
-from experiments.procedure import _parent
-from experiments.models.batchnorm_dropout_with_vgg16 import BatchnormDropoutWithVGG16 as vgg16
-from experiments.procedure import preprocess
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from models.batchnorm_dropout_with_vgg16 import BatchnormDropoutWithVGG16 as vgg16
+from procedure import preprocess
 
 
 # 引数を受け取る
@@ -28,8 +30,8 @@ parser.add_argument('--convolution',
                     help='convolution type', required=True)
 parser.add_argument('-p', '--pooling', choices=['max', 'average'],
                     help='pooling method', required=True)
-parser.add_argument('--fc', choices=['none', 'normal', 'semi'],
-                    help='full connected type', required=True)
+parser.add_argument('--rotational', choices=['false', 'true'],
+                    help='use of rotational update in full connected layers', required=True)
 parser.add_argument('--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--deepness', default=2, type=int, metavar='N',
@@ -48,7 +50,7 @@ MODEL_NAME = "{}_{}_{}_{}_{}_{}_{}_{}_{}_{}_batchnom_dropout".format(
     now.strftime("%Y-%m-%d_%H-%M-%S"),
     args.convolution,
     args.pooling,
-    args.fc,
+    args.rotational,
     args.epochs,
     args.deepness,
     args.cnn_bn_flag,
@@ -244,7 +246,7 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     model = vgg16(
         num_classes=10, model_type=args.convolution, pooling=args.pooling,
-        sync=args.fc, deepness=args.deepness, poolingshape=7,
+        rotational=args.rotational, deepness=args.deepness, poolingshape=7,
         cnn_bn_flag=args.cnn_bn_flag, fc_bn_flag=args.fc_bn_flag,
         fc_do_flag=args.fc_do_flag
     )
