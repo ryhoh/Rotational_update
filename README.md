@@ -1,2 +1,2 @@
 # Rotational_update
-Rotational_update for fully connected layer in DNN.
+Rotational_update module for fully connected layer in DNN.

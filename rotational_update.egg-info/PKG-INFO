@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: rotational-update
+Version: 0.0.17
+Summary: Rotational_update module for PyTorch
+Home-page: https://github.com/ryhoh/Rotational_update
+Author: Tetsuya Hori
+Author-email: axis38akasira@gmail.com
+License: MIT
+Description: # Rotational_update
+        Rotational_update module for fully connected layer in DNN.
+        
+Keywords: rotational rotational-update
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Description-Content-Type: text/markdown
