@@ -1,0 +1,10 @@
+numpy==1.17.3
+pandas==0.25.2
+Pillow==7.1.2
+python-dateutil==2.8.0
+pytz==2019.3
+six==1.12.0
+torch>=1.4.0
+torchvision
+tensorboard>=1.14
+rotational_update
