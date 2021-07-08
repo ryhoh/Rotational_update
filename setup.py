@@ -15,13 +15,13 @@ setup(
         "rotational_update.layers.functions"
         ],
 
-    version="0.0.17",
+    version="0.0.18",
     license="MIT",
 
-    install_requires=["torch>=1.3.0",],
+    install_requires=["torch>=1.3.0", "torchvision>=0.4.1"],
 
     author="Tetsuya Hori",
-    author_email="axis38akasira@gmail.com",
+    author_email="hori.t3t@gmail.com",
 
     url="https://github.com/ryhoh/Rotational_update",
 

@@ -1,3 +1,4 @@
+LICENSE
 README.md
 setup.py
 rotational_update/__init__.py

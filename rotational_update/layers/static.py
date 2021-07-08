@@ -5,14 +5,15 @@ from torch import Tensor
 from torch.nn.modules import Linear
 
 from rotational_update.layers.base import Rotatable
-from rotational_update.layers.functions.static import RotationalLinearFunction
+from rotational_update.layers.functions.static import RotationalLinearFunctionByInsertingGrad
+from rotational_update.layers.functions.static import RotationalLinearFunctionByInsertingZero
 
 
 class RotationalLinear(Linear, Rotatable):
     """
     Rotatable Linear class
     """
-    def __init__(self, linear: Linear):
+    def __init__(self, linear: Linear, reduce_backward: bool = True):
         """
         Parameters
         ----------
@@ -20,6 +21,8 @@ class RotationalLinear(Linear, Rotatable):
             Base Linear object. RotatationalLinear object takes over weights and biases from base object.
         """
         super().__init__(linear.in_features, linear.out_features, bias=True)
+        self.reduce_backward = reduce_backward
+
         # 重みを引き継ぎ
         # use current weights
         self.weight = deepcopy(linear.weight)
@@ -42,10 +45,8 @@ class RotationalLinear(Linear, Rotatable):
         for i in range(1, len(group_partition)):
             group_partition[i] += group_partition[i - 1]
 
-        group_i = 1
-
         self.group_partition = group_partition
-        self.group_i = group_i
+        self.group_i = 1
 
     def forward(self, input_tensor) -> Tensor:
         """
@@ -64,7 +65,10 @@ class RotationalLinear(Linear, Rotatable):
         self.learn_l = self.group_partition[self.group_i-1]
         self.learn_r = self.group_partition[self.group_i]
 
-        matmul = RotationalLinearFunction.apply
+        if self.reduce_backward:
+            matmul = RotationalLinearFunctionByInsertingGrad.apply
+        else:
+            matmul = RotationalLinearFunctionByInsertingZero.apply
         res = matmul(input_tensor, self.weight, self.bias, self.learn_l, self.learn_r)
 
         return res

@@ -6,12 +6,15 @@ Home-page: https://github.com/ryhoh/Rotational_update
 Author: Tetsuya Hori
 Author-email: axis38akasira@gmail.com
 License: MIT
-Description: # Rotational_update
-        Rotational_update module for fully connected layer in DNN.
-        
 Keywords: rotational rotational-update
 Platform: UNKNOWN
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Rotational_update
+Rotational_update module for fully connected layer in DNN.
+
+
