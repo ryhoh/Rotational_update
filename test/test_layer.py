@@ -1,3 +1,4 @@
+import sys
 from copy import deepcopy
 import unittest
 
@@ -8,6 +9,7 @@ from torch.nn import Parameter
 from torch.nn.modules import Linear
 from torchvision import models
 
+sys.path.append("..")  # If you get Rotational-Update from PyPI, you don't need this line
 from rotational_update import RotationalLinear
 
 

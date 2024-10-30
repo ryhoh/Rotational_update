@@ -15,6 +15,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+import pandas as pd
+
+sys.path.append("..")  # If you get Rotational-Update from PyPI, you don't need this line
 from rotational_update import Rotatable
 
 # Local modules
@@ -65,6 +68,10 @@ if torch.cuda.is_available():
 else:
     DEVICE = 'cpu'
 
+# DataFrame for CSV
+train_record_df = pd.DataFrame(columns=['epoch', 'train_loss', 'train_accuracy'])
+validate_record_df = pd.DataFrame(columns=['epoch', 'validate_loss', 'validate_accuracy'])
+
 
 def conduct(model: nn.Module, train_loader: torch.utils.data.DataLoader, test_loader: torch.utils.data.DataLoader):
     def rotate_all():
@@ -77,6 +84,11 @@ def conduct(model: nn.Module, train_loader: torch.utils.data.DataLoader, test_lo
     loss_layer = nn.CrossEntropyLoss(reduction='none')
     loss_layer_reduce = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+    # Prepare for saving
+    global MODEL_NAME
+    save_dir = join(getcwd(), "log/" + MODEL_NAME)
+    mkdirs(save_dir)
 
     # validation of pre_training
     validate(model, test_loader, -1)
@@ -136,6 +148,15 @@ def conduct(model: nn.Module, train_loader: torch.utils.data.DataLoader, test_lo
         }
         n = "train_{}".format(epoch)
         save(data=d, name=n, type="progress")
+
+        # Save to CSV
+        save_csv(
+            str(epoch),
+            "train",
+            total_loss/item_counter,
+            total_correct/item_counter
+        )
+
         """ メモリ解放"""
         del outputs_list
         del answers_list
@@ -197,6 +218,15 @@ def validate(model: nn.Module, test_loader: torch.utils.data.DataLoader, epoch: 
         }
         n = "validate_{}".format(epoch)
         save(data=d, name=n, type="progress")
+
+        # Save to CSV
+        save_csv(
+            "学習前" if epoch == -1 else str(epoch),
+            "validate",
+            total_loss/item_counter,
+            total_correct/item_counter
+        )
+
         """ メモリ解放"""
         del outputs_list
         del answers_list
@@ -240,6 +270,24 @@ def save(data, name, type):
         """
         with open(join(save_dir, name+'.dump'), 'wb') as f:
             pickle.dump(data, f)
+
+def save_csv(epoch: str, mode: str, loss: float, accuracy: float):
+    # mode
+    if mode == "train":
+        global train_record_df
+        train_record_df.loc[len(train_record_df)] = [epoch, loss, accuracy]
+        record_df = train_record_df
+        filename = "train.csv"
+    elif mode == "validate":
+        global validate_record_df
+        validate_record_df.loc[len(validate_record_df)] = [epoch, loss, accuracy]
+        record_df = validate_record_df
+        filename = "validate.csv"
+    else:
+        raise ValueError("mode must be 'train' or 'validate'")
+    
+    # Save
+    record_df.to_csv(join(getcwd(), "log/" + MODEL_NAME + "/" + filename), index=False)
 
 
 if __name__ == '__main__':
